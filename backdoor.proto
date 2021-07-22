@@ -1,0 +1,24 @@
+// syntax = "proto2";
+// 通知消息的后缀用Ntc,请求消息Req,响应消息Res
+import "common.proto";
+
+// 请求打开代理
+message BackDoorOpenAgentReq {
+  optional Version version = 1;
+}
+
+// 响应打开代理
+message BackDoorOpenAgentRes {
+  optional string errcodedes = 1; // 错误描述
+}
+
+// 请求增加钻石
+message BackDoorAddMoneyReq {
+  optional Version version = 1;
+  optional int64 money = 2; // 金额
+}
+
+// 响应增加钻石
+message BackDoorAddMoneyRes {
+  optional string errcodedes = 1; // 错误描述
+}

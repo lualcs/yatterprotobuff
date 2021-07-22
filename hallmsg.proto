@@ -1,0 +1,866 @@
+// See README.txt for information and build instructions.
+// syntax = "proto2";
+// 通知消息的后缀用Ntc,请求消息Req,响应消息Res
+
+import "common.proto";				// 通用协议
+import "game/mjcommonmsg.proto";	// 麻将通用协议
+import "game/nngame.proto";			// 抢庄牛牛 通比牛牛 随机牛牛 牛王 牛芒
+import "game/zjhmsg.proto";			// 炸金花
+import "game/pdkmsg.proto";			// 跑得快
+import "game/baccaratmsg.proto";	// 百家乐
+import "game/birdsmsg.proto";		// 飞禽走兽
+import "game/dragonmsg.proto";		// 龙虎斗
+import "game/qhbmsg.proto";			// 抢红包
+import "game/ttzmsg.proto";			// 推筒子
+import "game/bmwmsg.proto";			// 奔驰宝马
+import "game/fishingmsg.proto";		// 捕鱼
+import "game/fishingxymsg.proto";	// 西游捕鱼
+import "game/hnnmsg.proto";			// 百人牛牛
+import "game/ddzmsg.proto";			// 斗地主
+import "game/forestPartyMsg.proto";	// 森林舞会
+import "game/zzmjmsg.proto";		// 郑州麻将
+import "game/xzmjnewmsg.proto";		// 血战麻将
+import "game/kfmjmsg.proto";		// 开封麻将
+import "game/redBlackMsg.proto";	// 红黑
+import "game/sssmsg.proto";			// 十三水
+import "game/lygcmjmsg.proto";		// 洛阳杠次
+import "game/sanGongMsg.proto";		// 三公
+import "game/hnzzmjmsg.proto";		// 湖南转转
+import "game/gyzjmjmsg.proto";		// 贵阳捉鸡
+import "game/kwxmjmsg.proto";		// 湖北卡五星
+import "game/njmjmsg.proto";		// 四川内江麻将
+import "game/llsymjmsg.proto";		// 辽宁沈阳麻将
+import "game/hebmjmsg.proto";		// 黑龙江哈尔滨麻将
+import "game/texasmsg.proto";		// 德州扑克
+import "game/blackJackMsg.proto";   // 二十一点(黑杰克)
+import "game/sicBoMsg.proto";		// 百人骰宝
+import "game/paiGowMsg.proto";		// 牌九
+import "game/whmjmsg.proto";		// 武汉麻将
+import "game/csmjmsg.proto";		// 长沙麻将
+import "game/hbsjzmjmsg.proto";		// 石家庄麻将
+import "game/aymjmsg.proto";		// 安阳麻将
+import "game/jzmjmsg.proto";		// 焦作麻将
+import "game/hnhzmjmsg.proto";		// 湖南红中麻将
+import "game/hzmjmsg.proto";		// 杭州麻将
+import "game/fzmjmsg.proto";		// 福州麻将
+import "game/mythicalAnimalMsg.proto";// 神兽轮盘
+
+import "agentmsg.proto";         // 代理
+import "chatMsg.proto";          // 聊天
+import "clubMsg.proto";          // 俱乐部
+import "billMsg.proto";          // 账单
+import "wallet.proto";           // 钱包
+import "gamerecordmsg.proto";    // 战绩
+import "backdoor.proto";         // 后门
+import "thirdPayMsg.proto";      // 第三方支付
+import "feedbackmsg.proto";      // 留言
+
+message AlipayData{
+  optional string alipay_number = 1; //支付宝账号
+  optional string alipay_user_name = 2; //支付宝用户名
+}
+
+message BankData {
+  optional string bank_name = 1; //银行名
+  optional string bank_number = 2; //银行卡号
+  optional string bank_user_name = 3; //银行用户名
+  optional string bank_branch_name = 4; //银行支行名
+  optional string qq = 5; //qq
+  optional string wechat = 6; //微信
+}
+
+message PlayerBaseinfo {
+  optional int32 rid = 1;
+  optional string rolename = 2; //昵称
+  optional string logo = 3;   //logo
+  optional string phone = 4;  //手机号
+  optional int32 sex = 5;    //性别
+  optional int64 coin = 6; //金币
+  optional int64 bankpack = 7;  //银行保险箱
+  optional int32 gameid = 8;    //游戏id
+  optional string invitecode = 9; //邀请码
+  optional BankData bankcard = 10;     //银行卡信息
+  optional AlipayData alipay= 11;  //支付宝信息
+  optional string adress = 12;      //注册地址
+  optional int32 vip = 13;    //vip等级
+  optional int32 frame = 14;    //头像框
+  optional int64 diamond = 15; // 钻石
+  optional int32 parent_rid = 16;   // 直属上级代理rid
+}
+
+message SeatInfo {
+  optional int32 rid = 1;
+  optional int32 index = 2;
+  optional int32 state = 3;
+  optional bool is_tuoguan = 4; //是否处于托管状态
+  optional int32 gameid = 5;     //游戏id
+  optional int32 cardsnum = 6;   //记录玩家手上剩余牌张数	 
+  optional int64 coin = 7;       //金币
+
+  optional SeatInfo7 seatinfo7 = 8; //跑得快
+  optional SeatInfo52 seatinfo52  = 9;  //捕鱼
+  optional int64 ready_time  = 10;     //未准备,剔除时间
+  optional int64 curr_num    = 11;     //已玩多少局
+}
+
+message TablePlayerInfo {
+  optional int32 rid = 1;
+  optional string rolename = 2;
+  optional string logo = 3;
+  optional int32 sex = 4;
+  optional int32 gameid = 5;
+  optional int64 coin = 6;
+  optional int64 lottery = 7;
+  optional int64 roomcard = 8;
+  optional int64 gemstone = 9;
+  optional string ip = 10;
+  optional string latitude_longitude = 11; //经纬度
+  optional bool is_robot = 12;  //是否是机器人
+  optional int32 achi_id = 13;        //当前成就id
+  optional string adress = 14;      //注册地址
+}
+
+message ActionPlayerItem {
+  optional int32 rid = 1;
+  optional int32 roomsvr_seat_index = 2;    //当前操作玩家的座位号
+  optional int32 action_to_time = 3;       //当前操作玩家的到期时间
+  repeated int32 action_types = 4;         //玩家可以执行的操作类型
+  repeated int32 multiples = 5;        		//加倍倍数
+}
+
+
+message GameInfo {
+  optional int32 id = 1;    //table id
+  optional int32 state = 2; //table state
+  optional string name = 3; //桌子名字
+  optional int32 room_type = 4; //房间类型
+  optional int32 max_player_num = 5;   //房间支持的最大人数
+  optional int32 cur_player_num = 6;   //房间当前人数
+  optional int32 retain_to_time = 7;   //桌子保留到的时间(linux时间擢)
+  optional int32 retain_to_num = 8;    //游戏保留局数
+  optional int32 curr_to_num = 9;     //游戏当前已经进行了的局数
+  optional int32 create_user_rid = 10; //创建者rid
+  optional string create_user_rolename = 11; //创建者姓名
+  optional int32 create_time = 12;      //桌子的创建时间
+  optional int32 create_table_id = 13; //创建桌子的索引id	
+  optional string roomsvr_id = 14;      //房间服务器id
+  optional int32 roomsvr_table_address = 15; //桌子table的地址
+  optional string create_user_logo = 16;
+  repeated ActionPlayerItem action_player_list = 17;
+  //下面两个结构按数组下标一一对应
+  repeated SeatInfo seats = 18; //座位
+  repeated TablePlayerInfo tableplayerinfos = 19;
+
+  optional int64 service_charge = 20; 	//服务费
+  optional string gamerecord_id = 21; 	//当前房间战绩的唯一id
+  optional int64 base_score = 22;     	//底分
+  optional int64 min_carry_coin = 23; 	//最小金币携带
+  optional int64 kick_limit_coin = 24;	//金币最小踢出限制
+  optional int32 min_player_num = 25;	//房间支持的最小人数
+
+  optional Gameinfo2				 gameinfo2   = 26; //抢庄牛牛
+  optional GameInfo6				 gameinfo6   = 27; //炸金花
+  optional Gameinfo7				 gameinfo7   = 28; //跑得快
+  optional DDZGameInfo				 gameinfo9   = 29; //斗地主
+  optional Gameinfo2				 gameinfo22  = 30; //通比牛牛
+  optional Gameinfo2				 gameinfo23  = 31; //随机牛牛
+  optional GameInfo52				 gameinfo52  = 32; //捕鱼
+  optional BaccaratGameInfo 		 gameinfo101 = 33; //百家乐
+  optional DragonTigerBattleGameInfo gameinfo102 = 34; //龙虎斗
+  optional BirdsGameInfo 			 gameinfo103 = 35; //飞禽走兽
+  optional GrabRedPacketGameInfo	 gameinfo104 = 36; //抢红包
+  optional TTZGameInfo				 gameinfo105 = 37; //推筒子
+  optional GameInfo106				 gameinfo106 = 38; //百人牛牛
+  optional GameInfo115				 gameinfo115 = 39; //奔驰宝马
+  optional string					 gameinfo118 = 40; //水浒传
+  optional string					 gameinfo119 = 41; //水果机
+  optional string					 gameinfo120 = 42; //水果777
+  optional Gameinfo121				 gameinfo121 = 43; //牛王
+  optional ForestPartyGameInfo		 gameinfo122 = 44; //森林舞会
+  optional SicBoGameInfo			 gameinfo107 = 45; //百人骰宝
+  optional string 					 gameinfo123 = 46; //金鸡报喜
+  optional string 					 gameinfo125 = 47; //宝石神兽
+  optional string					 gameinfo126 = 48; //龙狮争霸
+  optional GameInfo108			 	 gameinfo108 = 49; //神兽轮盘
+  optional string			 	 	 gameinfo127 = 50; //西游寻宝
+  optional RedBlackGameInfo	gameinfo100 = 69; //红黑大战
+  optional GameInfo53 gameinfo53  = 70; //德州扑克
+  optional GameInfo54 gameinfo54  = 71; //西游捕鱼
+  optional Gameinfo13 gameinfo13 = 73; //十三水
+  optional string 	gameinfo124 = 74; //金玉满堂
+  optional GameInfo10 gameinfo10 = 75; //三公
+  optional GameInfo14 gameinfo14 = 76; //二十一点(黑杰克)
+  optional GameInfo15 gameinfo15 = 77; //牌九
+  optional ZZMJGameInfo gameinfo130 = 100; //郑州麻将
+  optional XzmjNewGameInfo gameinfo131 = 101; //血战麻将
+  optional KfmjGameInfo gameinfo132 = 102; //开封麻将
+  optional XzmjNewGameInfo gameinfo133 = 103; //3人血战麻将 注意：100-130麻将已征用,gameId对应130-160;add by wangjiangjun
+  optional ZZMJGameInfo gameinfo134 = 104; //河南麻将
+  optional lygcMjGameInfo gameinfo135 = 105; //洛阳杠次
+  optional XzmjNewGameInfo gameinfo136 = 106;//血流麻将
+  optional hnzzMjGameInfo gameinfo137 = 107;//湖南转转
+  optional GyzjmjGameInfo gameinfo138 = 108;//贵阳捉鸡
+  optional kwxMjGameInfo gameinfo139 = 109;//湖北卡五星
+  optional CSMJGameInfo gameinfo140 = 110;//长沙麻将
+  optional WhmjGameInfo gameinfo141 = 111;//武汉麻将
+  optional njMjGameInfo gameinfo142 = 112;//四川内江
+  optional hebMjGameInfo gameinfo143 = 113;//黑龙江哈尔滨麻将
+  optional llsyMjGameInfo gameinfo144 = 114;//辽宁沈阳麻将
+  optional HbsjzmjGameInfo gameinfo145 = 115;//河北石家庄麻将
+  optional GameInfo146 gameinfo146 = 116; //安阳麻将
+  optional GameInfo147 gameinfo147 = 117; //焦作麻将
+  optional GameInfo148 gameinfo148 = 118; //湖南红中麻将
+  optional HzmjGameInfo gameinfo149 = 119; //杭州麻将
+  optional FzmjGameInfo gameinfo151 = 121; //福州麻将
+}
+
+// 绑定微信请求
+message BindWechatReq {
+	optional string wechat = 1; // 微信id
+	optional string logo = 2; // 头像
+	optional string rolename = 3; // 昵称
+	optional int32 sex = 4; // 性别
+}
+
+// 绑定微信响应
+message BindWechatRes {
+	optional string errcodedes = 1;//错误描述
+}
+
+//心跳包请求
+message HeartReq {
+	optional Version version = 1;
+}
+
+//心跳包响应
+message HeartRes {
+	optional int32 errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; //错误描述
+	optional int32 servertime = 3;  //服务器时间
+}
+
+//请求进入游戏
+message EnterGameReq {
+  optional Version version = 1;
+  optional string logintoken = 2;
+  required int32 auth_type = 3;   //账号类型 0游客 1手机号密码 2手机号令牌
+  optional string user_name = 4;  //用户名 微信账号是用户的unionid 手机号登录就是手机号
+  optional string login_ip = 5;   //玩家真实ip
+  optional string login_location = 6;
+  optional string login_device_type = 7;   //手机型号
+  optional string login_device_imei = 8;//手机品牌
+  optional string cpass = 9;   //手机密码
+  optional string vcode = 10; //验证码
+}
+
+//响应进入游戏
+message EnterGameRes {
+	optional int32 errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; //错误描述
+	optional int32 isreauth = 3; //是否需要重新认证，断线重连时根据token是否过期告诉client是否需要重新登录认证, 2表示false、1表示true
+	optional int32 servertime = 4; //同步服务器时间
+	optional PlayerBaseinfo baseinfo = 5; //下面数据用于判断玩家是否需要牌桌断线重连
+	optional string ip = 6;   //gatesvrd的ip
+	optional int32 port = 7;  //gatesvrd的port
+	optional string roomsvr_id = 8; //房间服务器id
+	optional int32  roomsvr_table_address = 9; //桌子的服务器地址
+	optional int32  gameid = 10; //游戏类型id
+	optional int32 subid = 11;//游戏子类型
+	optional string logintoken = 12;//玩家登录用token
+	optional int32 gamemode = 13; //0:普通模式 1:俱乐部自建模式
+	optional int32 club_id = 14;
+	optional string config = 15; // 服务器配置
+	optional int32 new_player = 16;	// 是否是空白账号
+	optional string resource_cfg = 17;	// 资源服务器配置
+}
+
+message GetTableStateReq{
+	optional Version version = 1;
+}
+
+message GetTableStateRes{
+	optional int32 state = 1;	//0: 未开局 1:对局中
+}
+
+//请求创建朋友桌
+message CreateFriendTableReq {
+	optional Version version = 1;
+	optional int32   gameid = 2;
+	optional string  gamecfg = 3; //创建房间配置 json串，格式和没有游戏协议中的CreateTableCfg对应
+	optional int32	club_id = 4;
+}
+
+//响应创建朋友桌
+message CreateFriendTableRes {
+	optional int32  errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; //错误描述
+	optional int32 create_table_id = 3; //朋友桌索引号
+	optional int32  gameid = 4;  //游戏类型id
+	optional GameInfo gameinfo = 5;
+}
+
+message TablePlayerItem{
+	optional string rolename = 1;
+	optional string logo = 2;
+	optional int32 seat_index = 3;
+}
+
+message TableItem{
+	optional int32 create_table_id = 1;
+	optional int32 player_count = 2;
+	optional string gamecfg = 3;
+	repeated TablePlayerItem player_list = 4;
+	optional int32 gameid = 5;
+	optional string table_token = 6;
+	optional string table_gid = 7;
+	optional int32 remain_time = 8;	//桌子剩余时间 秒
+}
+
+//取得玩家自己创建桌列表请求
+message GetFriendTableListReq {
+	optional Version version = 1;
+	repeated int32 gameid = 2;
+	optional int32 club_id = 3;
+}
+
+//取得玩家自己创建桌列表响应
+message GetFriendTableListRes {
+	optional int32 errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; //错误描述
+	repeated TableItem tablelist = 3; //桌子状态列表
+}
+
+//修改自建桌配置请求
+message ModifyFriendTableReq {
+	optional Version version = 1;
+	optional int32 club_id = 2;
+	optional int32 create_table_id = 3;
+	optional string gamecfg = 4;
+	optional int32 gameid = 5;
+}
+
+//修改自建桌配置响应
+message ModifyFriendTableRes {
+	optional int32 errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; //错误描述
+}
+
+//解散自建桌子请求
+message DissolveFriendTableReq {
+	optional Version version = 1;
+	optional int32 club_id = 2;
+	optional int32 create_table_id = 3;
+	optional int32 gameid = 4;
+}
+
+// 解散自建桌子请求
+message DissolveFriendTableRes {
+	optional int32 errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; //错误描述
+}
+message GetRoomConfigReq {
+	optional Version version = 1;
+	optional int32 gameid = 2;
+}
+
+message RoomConig{
+	optional int32 id = 1;
+	optional int64 base_score = 2;
+	optional string name = 3;
+	optional int32 min_carry_coin = 4;
+	optional int32 bankerlimit = 5;
+	optional int32 max_mult = 6;
+}
+
+message GetRoomConfigRes { 
+	repeated RoomConig roomconfig_list = 1;
+}
+
+//查是否能够进入房间
+message IsCanEnterTableReq {
+	optional Version version = 1;
+	optional int32 id = 2;
+	optional int32 gameid = 3;
+	optional int32 club_id = 4; //俱乐部id
+	optional int32 gamemode = 5; //0:普通模式 1:建桌模式
+	optional string table_token = 6;
+}
+
+message IsCanEnterTableRes {
+	optional string errcodedes = 2; //错误描述
+	optional int32 gameid = 3;
+	optional int32 gamemode = 4; //0:普通模式 1:建桌模式
+}
+
+//请求进入桌子
+message EnterTableReq {
+	optional Version version = 1;
+	optional int32 id = 2;
+	optional string roomsvr_id = 3; //房间服务器id
+	optional int32  roomsvr_table_address = 4; //桌子的服务器地址
+	optional int32  gameid = 5;
+	optional string password = 6;    //如果是密码房间需要带入密码认证
+	optional bool is_quickstart = 7; //是否走了快速开始
+	optional int32 room_type = 8;
+	optional int64 base_score = 9;
+	optional int32 pattern = 10;
+	optional int32 use_voucher_lottery = 11; //使用的游乐券数
+	optional int32 club_id = 12; //俱乐部id
+	optional int32 gamemode = 13; //0:普通模式 1:俱乐部自建模式
+	optional string table_token = 14;
+}
+
+//响应进入桌子
+message EnterTableRes {
+	optional int32 errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; //错误描述
+	optional GameInfo gameinfo = 3;
+	optional int32 gameid = 4;
+	optional int32 playgametime = 5; //当前在线阶段开启时间戳
+	optional int32 online_id = 6;	 //当前在线奖励id(0表示所有奖励领完)
+	optional string roomsvr_id = 7;  //房间服务器id
+	optional int32  roomsvr_table_address = 8; //桌子的服务器地址
+	optional string gamecfg = 9;  //规则描述
+	optional string table_token = 10;
+}
+
+//请求离开桌子
+message LeaveTableReq {
+	optional Version version = 1;
+	optional int32 id = 2;
+	optional string roomsvr_id = 3; //房间服务器id
+	optional int32  roomsvr_table_address = 4; //桌子的服务器地址
+	optional int32 gameid = 5;
+}
+
+//响应离开桌子
+message LeaveTableRes {
+	optional int32 errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; //错误描述
+	optional int32 gameid = 3;
+}
+
+//请求断线重连进入桌子
+message ReenterTableReq {
+	optional Version version = 1;
+	optional string roomsvr_id = 2; //房间服务器id
+	optional int32  roomsvr_table_address = 3; //桌子的服务器地址
+	optional int32  gameid = 4;
+}
+
+//响应断线重连进入桌子
+message ReenterTableRes {
+	optional int32 errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; //错误描述
+	optional GameInfo gameinfo = 3;
+	optional int32 gameid = 4;
+	optional int32 playgametime = 5; //当前在线阶段开启时间戳
+	optional int32 online_id = 6;	 //当前在线奖励id(0表示所有奖励领完)
+	optional string gamecfg = 7;  //规则描述
+}
+
+//玩家请求操作
+message DoactionReq {
+	optional Version version = 1;
+	optional int32 id = 2;
+	optional string roomsvr_id = 3; //房间服务器id
+	optional int32  roomsvr_table_address = 4; //桌子的服务器地址
+	optional int32  gameid = 5;
+	optional int32  action_type = 6;
+	repeated int32  cards = 7;    //玩家出的牌(五子棋落子点XY)
+	optional int64  score = 8;    //叫分(牛牛)/颠簸值(扯旋)/红包金额(抢红包)
+	optional int32 que_card_color = 9;       //牌花色
+	optional int32 bet_score = 10; //玩家游戏中下注分数 /雷号(抢红包)
+	optional int32 to_index = 11;  //目标玩家作为号
+	optional int32 to_rid   = 12;  //目标玩家rid
+	optional int32 multiple = 13;   //拼三张下注倍数/跑得快加倍
+	optional int32 sui_piao  = 14;  //飘(0不飘,1飘(以后可能会有飘多少陪))
+	optional int32 bet_type  = 15;  //下注类型(1庄家,2闲家,3和)
+	optional string hongbao_key  = 16; //红包的key
+  	optional string req_info = 17; //游戏请求数据(json)
+}
+
+//响应玩家请求操作
+message DoactionRes {
+	optional int32 errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; //错误描述
+	optional int32  gameid = 3;
+	optional int32  action_type = 4; //玩家操作
+  	optional string res_info = 5;//消息
+}
+
+// 请求客服信息
+message CustomerInfoReq {
+  optional Version version = 1;
+  optional int32 type = 2; // 客服类型 2:银行卡充值 3:全国招商 4:支付宝相关 5:游戏相关
+}
+
+// 响应客户信息
+message CustomerInfoRes {
+  optional string errcodedes = 1; // 错误描述
+  optional int32 rid = 2; // 客服id
+}
+
+// 请求客服银行卡信息
+message CustomerAccountReq {
+  optional Version version = 1;
+}
+
+// 响应客服银行卡信息
+message CustomerAccountRes {
+  optional string errcodedes = 1; // 错误描述
+  optional string bank_name = 2; // 银行名
+  optional string bank_code = 3; // 银行卡号
+  optional string bank_owner = 4; // 开户人
+}
+
+// 请求存入取出银行保险箱
+message BankpackReq {
+  optional int64 coin = 1; //金币
+	optional bool is_deposit = 2; //存入还是取出 true表存入 false表示取出
+	optional Version version = 3;
+}
+
+// 响应银行保险箱
+message BankpackRes {
+	optional int32 errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; // 错误描述
+	optional int64 coin = 3; //金币
+	optional int64 bankpack = 4; //银行保险箱余额
+	optional bool is_deposit = 5; //存入还是取出 true表存入 false表示取出
+}
+
+// 请求打开银行保险箱
+message OpenBankpackReq {
+	optional Version version = 1;
+}
+
+// 响应银行保险箱
+message OpenBankpackRes {
+	optional int64 coin = 1; //金币
+}
+
+//玩家请求短信验证码
+message GetVcodeReq {
+	required Version version = 1;
+	required string phone_number = 2; // 电话号码
+}
+
+//响应玩家请求短信验证码
+message GetVcodeRes {
+	required int32 errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; // 错误描述
+}
+
+//获取玩家列表信息
+message GetPlayerListReq {
+	optional Version version = 1;
+	optional int32 id = 2;
+	optional string roomsvr_id = 3;            //房间服务器id
+	optional int32  roomsvr_table_address = 4; //桌子的服务器地址
+	optional int32 query_index = 5 ;           //查询索引 从1开始
+	optional int32 query_num = 6;              //查询数量
+}
+
+//玩家列表单元
+message PlayerListItem {
+    required int32 rid = 1;             //rid
+    required string rolename = 2;       //姓名
+    required string logo = 3;           //头像
+    required int32 	sex = 4;            //性别 1男 2女
+    required int64 coin = 5;            //金币
+    required string address = 6;        //注册地址
+    optional int64 totalBet = 7;        //总下注
+    optional int32 winTimes = 8;        //胜利局数
+    optional int32 vipLevel = 9;        //vip等级
+	optional int32 frame = 10;         //头像边框
+	optional int32 server_cost = 11;	//服务费
+	optional int32 amount_change = 12;	//总输赢
+}
+
+//获取玩家列表信息响应
+message GetPlayerListRes {
+	optional int32 errcode 		= 1;        //错误原因 0表示成功
+	optional string errcodedes 	= 2;        //错误描述
+	repeated PlayerListItem playerList  = 3;	//玩家信息
+}
+
+////////////////////notice/////////////////////
+//通知在其他设备上登陆
+message RepeatNtc {
+	optional int32 rid = 1;
+}
+
+//通知玩家开始游戏
+message GameStartNtc {
+	optional GameInfo gameinfo = 1;
+}
+
+message GamePlayerItem
+{
+    optional int32 rid = 1;             //rid
+    optional string rolename = 2;       //姓名
+    optional string logo = 3;           //头像
+    optional int32 	sex = 4;			//性别 1男 2女
+    optional int64 status = 5;			//状态 1 已同意
+	optional string ip = 6;				//ip地址
+	optional int32 seat_index = 7;		//座位号
+}
+
+//作弊检测玩家列表
+message GameCheatCheckNtc {
+	optional int32 gameid = 1;
+	optional int32 create_table_id = 2;
+	repeated GamePlayerItem player_list = 3;
+}
+
+//作弊检测玩家状态
+message GameCheatCheckStatusNtc {
+	optional int32 gameid = 1;
+	optional int32 create_table_id = 2;
+	optional int32 rid = 3;
+	optional int32 status = 4;
+}
+
+//作弊检测同意开局
+message GameCheatCheckReq {
+	optional Version version = 1;
+}
+
+message GameCheatCheckRes {
+	optional string errcodedes = 1; // 错误描述
+}
+
+//解散房间玩家数据
+message DismissPlayerInfo {
+	optional int32 rid                               = 1;
+	optional string logo                             = 2;
+	optional int32 state                             = 3; // 0未知 1同意 2 不同意
+}
+//解散房间 同意、拒绝、发起(第一个同意的人) 请求
+message DismissReq{
+	optional Version version                         = 1;
+	optional int32 rid                               = 2;
+	optional bool whether                            = 3; //是否  (弃牌,解散)
+	
+}
+//解散房间 同意或者拒绝 结果
+message DismissRes{
+	optional string errcodedes                       = 1; // 错误描述
+}
+//玩家操作结果通知
+message DismissNtc {
+	optional int32 rid                               = 1;
+	optional int32 state                             = 2;
+}
+//打开解散房间弹框
+message DismissDataNtc{
+	repeated DismissPlayerInfo DismissPlayerInfoList = 1; //玩家列表
+	optional int32 timer                             = 2; //当前时间
+	optional int32 totalTimer                        = 3; //总时间
+	optional string roleName                         = 4; //发起者姓名
+}
+
+// 准备通知
+message GameReadyResultNtc {
+	optional int32 rid = 1;
+	optional int32 roomsvr_seat_index = 2;
+	optional int32 isready = 3;
+	optional int32 gameid = 4;
+	optional bool is_tuoguan = 5; //玩家是否托管
+}
+
+//通知玩家游戏总结算
+message GameTotalResultNtc {
+	optional int64 time = 1;
+	repeated PlayerListItem	playerList = 2;
+	optional int32 round = 3;
+	optional int32 round_count = 4;
+	optional string matchid = 5;
+}
+
+//通知玩家游戏金币变化后的值
+message PlayerCoinNtc {
+	optional int64 coin = 1;
+	optional string why = 2;
+	optional int64 diamond = 3;
+}
+
+//触发跑马灯通知
+message MarqueemsgNtc {
+  required int32 msgType = 1;//消息类型, 1是系统,2是坐庄,3是牌型,4是分数
+  optional string rolename = 2; //角色名字
+  optional int32 gameid = 3;//游戏id
+  optional int32 subid = 4; //场次类型
+  optional string winType = 5;//牌型
+  optional int32 winCoin = 6;//赢的钱
+  optional string sysMsg = 7;//系统跑马灯内容
+}
+
+message PlayerEnterNtc {
+	optional int32 outtime = 1;         //准备倒计时，没有就不需要等待
+	optional int32 table_status = 2;
+	optional GamePlayerInfo player = 3;
+}
+
+//通知玩家玩家掉线
+message PlayerLeaveNtc {
+	optional int32 rid = 1;
+	optional int32 roomsvr_seat_index = 2;
+	optional bool is_leave = 3; //是否离 true表是 false表示否
+}
+
+//离开桌子
+message LeavetableNtc {
+	optional int32 rid = 1;
+	optional int32 reason = 2;
+	optional int32 gameid = 3; //游戏类型
+}
+
+// 编辑玩家头像请求
+message ChangeLogoAndframeReq {
+	optional Version version = 1;
+	optional string logo = 2; // logo
+	optional int32 frame = 3; // 头像框
+}
+
+// 编辑玩家头像响应
+message ChangeLogoAndframeRes {
+	optional string errcodedes = 1; // 错误描述
+}
+
+// 编辑玩家昵称请求
+message ChangeRolenameReq {
+  optional string rolename = 1; // 昵称
+}
+
+// 编辑玩家昵称响应
+message ChangeRolenameRes {
+  optional string errcodedes = 1; // 错误描述
+}
+
+// 编辑玩家性别请求
+message ChangeSexReq {
+  optional int32 sex = 1; // 性别
+}
+
+// 编辑玩家性别响应
+message ChangeSexRes {
+  optional string errcodedes = 1; // 错误描述
+}
+
+// 重置玩家登录密码请求
+message ChangeLoginPasswdReq {
+	required string login_passwd = 1;   // 登录密码
+	required int32  vcode        = 2;   // 验证码
+}
+
+// 重置玩家登录密码响应
+message ChangeLoginPasswdRes {
+	optional int32 	errcode = 1; // 错误码
+	optional string errdesc = 2; // 错误描述
+}
+
+//请求排行榜数据
+message RankListReq{
+	optional Version version = 1;
+}
+
+//
+message RankCoinNode
+{
+	required int32 rid = 1;
+	required int64 coin = 2;
+	required string rolename = 3;
+	required string logo = 4;
+	required int32 frame = 5;
+	required int32 index = 6;
+	required int32 level = 7;
+}
+
+message RankVipNode
+{
+	required int32 rid = 1;
+	required int32 level = 2;
+	required string rolename = 3;
+	required string logo = 4;
+	required int32 frame = 5;
+	required int32 index = 6;
+}
+
+//返回排行榜数据
+message RankListRes{
+    repeated RankCoinNode coinlist=1;
+	repeated RankVipNode   viplist=2;
+	optional string errcodedes = 3;//错误描述
+}
+
+//请求银行卡支付宝信息
+message  PayBankAliDataReq{
+		optional Version version = 1;
+}
+
+//返回银行卡支付宝信息
+message PayBankAliDataRes{
+	optional string bank_account_code=1;//卡号
+	optional string bank_account_owner=2;//名字
+	optional string bank_name=3;//开户行
+	optional string bank_account_location=4;//支行
+	optional string connectinfo=5;//联系方式
+	optional string alipay = 6;//支付宝账号
+	optional string aliname=7;//支付宝名字
+	optional string errcodedes = 8;//错误描述
+}
+
+//绑定支付宝或者银行卡
+message BindBankAliReq{
+	optional string bank_account_code=1;
+	optional string bank_account_owner=2;
+	optional string bank_name=3;
+	optional string bank_account_location=4;
+	optional string connectinfo=5;
+	optional string alipay = 6;
+	optional string aliname=7;
+	optional Version version = 8;
+}
+
+//绑定返回
+message BindBankAliRes{
+	optional string errcodedes = 1;//错误描述
+}
+
+// 请求更换绑定手机验证
+message PhoneCheckReq {
+  optional Version version = 1;
+  optional string vcode = 2; // 验证码
+}
+
+// 响应更换绑定手机验证
+message PhoneCheckRes {
+  optional string errcodedes = 1; // 错误描述
+}
+
+// 请求绑定手机验证
+message BindPhoneCheckReq {
+  optional Version version = 1;
+  optional string phone = 2; // 手机号
+  optional string vcode = 3; // 验证码
+}
+
+// 响应绑定手机验证
+message BindPhoneCheckRes {
+  optional string errcodedes = 1; // 错误描述
+}
+
+// 请求获取玩家身份
+message GetIdentityReq {
+  optional Version version = 1;
+}
+
+// 响应获取玩家身份
+message GetIdentityRes {
+  optional int32 isAgent = 1; // 代理类型 1：大区代理 2：普通代理 3：玩家
+  optional bool  isPlayer = 2; // 是否是玩家
+  optional bool  inClub = 3; // 是否加入过俱乐部
+  optional bool  isCusSvc = 4;	// 是否是客服
+}

@@ -1,0 +1,206 @@
+// syntax = "proto2";
+// 通知消息的后缀用Ntc,请求消息Req,响应消息Res
+import "common.proto";
+
+// 请求获取金币变动记录
+message GetMoneyChangeReq {
+  optional Version version = 1;
+  optional int32 page = 2;
+  optional int32 limit = 3;
+}
+
+// 金币变动记录
+message MoneyChangeItem {
+  optional string type = 1; // 变动类型
+  optional string time = 2; // 变动时间
+  optional int64 coin = 3; // 变动数额
+}
+
+// 响应获取金币变动记录
+message GetMoneyChangeRes {
+  repeated MoneyChangeItem items = 1; // 变动记录
+  optional int32 page = 2;
+  optional int32 limit = 3;
+}
+
+// 请求获取钻石变动记录
+message GetDiamondChangeReq {
+  optional Version version = 1;
+  optional int32 page = 2;
+  optional int32 limit = 3;
+}
+
+// 钻石变动记录
+message DiamondChangeItem {
+  optional string type = 1; // 变动类型
+  optional string time = 2; // 变动时间
+  optional int64 diamond = 3; // 变动数额
+}
+
+// 响应获取钻石变动记录
+message GetDiamondChangeRes {
+  repeated DiamondChangeItem items = 1; // 变动记录
+  optional int32 page = 2;
+  optional int32 limit = 3;
+}
+
+// 请求转账
+message TransferReq {
+  optional Version version = 1;
+  optional string tpass = 2; // 交易密码
+  optional int32 toRid = 3; // 转账目标id
+  optional int64 coin = 4; // 转账金额
+}
+
+// 响应转账
+message TransferRes {
+  optional string errcodedes = 1; // 错误描述
+}
+
+// 请求发红包
+message RedPacketReq {
+  optional Version version = 1;
+  optional string tpass = 2; // 交易密码
+  optional int32 chatId = 3; // 聊天id
+  optional int64 coin = 4; // 红包金额
+  optional int64 count = 5; // 红包个数
+  optional string text = 6; // 提示文本
+}
+
+// 响应发红包
+message RedPacketRes {
+  optional string errcodedes = 1; // 错误描述
+}
+
+// 请求获取红包信息
+message RedPacketInfoReq {
+  optional Version version = 1;
+  optional string id = 2; // 红包id
+}
+
+// 红包领取者信息
+message ReceiverItem {
+  optional int32 rid = 1; // id
+  optional string time = 2; // 时间
+  optional int64 coin = 3; // 金额
+}
+
+// 响应获取红包信息
+message RedPacketInfoRes {
+  optional bool received = 1; // 自己是否已经领取
+  optional bool finished = 2; // 是否已经领完
+  optional int32 rid = 3; // 发放者id
+  optional int64 coin = 4; // 总金额
+  optional int32 count = 5; // 总个数
+  optional int32 recCount = 6; // 已领取个数
+  optional string text = 7; // 红包提示文本
+  repeated ReceiverItem receivers = 8; // 领取者列表
+}
+
+// 请求领取红包
+message ReceiveRedPacketReq {
+  optional Version version = 1;
+  optional string id = 2; // 红包id
+}
+
+// 响应领取红包
+message ReceiveRedPacketRes {
+  optional string errcodedes = 1; // 错误描述
+  optional int64 coin = 2; // 金额
+}
+
+// 请求检查是否已设置支付密码
+message CheckTransPassReq {
+  optional Version version = 1;
+}
+
+// 响应检查是否已设置支付密码
+message CheckTransPassRes {
+  optional bool res = 1; // 验证结果 true:已设置
+}
+
+// 请求设置支付密码
+message SetTransPassReq {
+  optional Version version = 1;
+  optional string tpass = 2; // 新交易密码
+  optional string oldtpass = 3; // 旧交易密码
+}
+
+// 响应设置支付密码
+message SetTransPassRes {
+  optional string errcodedes = 1; // 错误描述
+}
+
+// 请求验证支付密码
+message VerifyTransPassReq {
+  optional Version version = 1;
+  optional string tpass = 2; // 支付密码
+}
+
+// 响应验证支付密码
+message VerifyTransPassRes {
+  optional string errcodedes = 1; // 错误描述
+  optional bool ret = 2; // 验证结果
+}
+
+// 请求清除历史记录
+message ClearHistoryReq {
+  optional Version version = 1;
+  repeated string type = 2; // 类型 profit:收益数据 balance:余额明细 bill:账单数据
+  optional int32 time = 3; // 时间 n:n天前 0:全部
+}
+
+// 响应清除历史记录
+message ClearHistoryRes {
+  optional string errcodedes = 1; // 错误描述
+}
+
+// 请求会员提款
+message ExchangeReq {
+  optional Version version = 1;
+  optional int64 coin = 2; // 分为单位
+  optional string type = 3; // 提款方式    枚举值：官方提款 "official"；支付宝 "alipay"；银行卡  "bankcard"
+  optional string tpass = 4; // 支付密码
+}
+
+// 响应会员提款
+message ExchangeRes {
+  optional int32 errcode = 1; // 错误原因 0表示成功
+  optional string errcodedes = 2; // 错误描述
+  optional int64 maxCoin = 3; // 现最大可提款金额
+}
+
+// 请求获取钻石商城列表
+message GetDiamondMallReq {
+  optional Version version = 1;
+}
+
+// 钻石商城项
+message DiamondMallItem {
+  optional string mallId = 1; // id
+  optional int32 icon = 2; // 图标
+  optional int64 diamond = 3; // 钻石数量
+  optional int64 extraDiamond = 4; // 赠送钻石数量
+  optional int64 coin = 5; // 购买消耗金币数量
+  optional string name = 6; // 商品名
+  optional bool isHot = 7; // 是否热销
+  optional string flag = 8; // 商品标签
+  optional int32 buyCount = 9; // 购买人数
+}
+
+// 响应获取钻石商城列表
+message GetDiamondMallRes {
+  repeated DiamondMallItem items = 1; // 钻石商城列表
+}
+
+// 请求购买钻石
+message BuyDiamondMallReq {
+  optional Version version = 1;
+  optional string mallId = 2; // id
+  optional string tpass = 3; // 支付密码
+}
+
+// 响应购买钻石
+message BuyDiamondMallRes {
+  optional string errcodedes = 1; // 错误描述
+}

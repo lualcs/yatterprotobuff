@@ -1,0 +1,45 @@
+// syntax = "proto2";
+// 通知消息的后缀用Ntc,请求消息Req,响应消息Res
+import "common.proto";
+
+// 请求玩家游戏记录
+message PlayerGameRecordReq {
+  optional Version version = 1;
+  optional int32 game_id = 2; // 游戏id
+  optional int32 page = 3; // 页码
+  optional int32 limit = 4; // 单页条数
+  optional int32 day = 5; // 时间 1:今日 2:昨日 3:前日
+}
+
+// 游戏记录
+message Gamerecord {
+  optional string extend = 1; // 额外数据(json)
+  optional string matchid = 2; // 对局id
+  optional int32 game_sub_id = 3; // 房间id
+  optional int64 total_bet = 4; // 总投注
+  optional int64 bet_joincal_culate = 5; // 有效投注
+  optional int64 get_Jackpot = 6; // 派彩
+  optional int64 lucky_jackpot = 7; // 彩金
+  optional int64 amount_change = 8; // 本局输赢
+  optional int64 total_win = 9; // 累计输赢
+}
+
+// 返回玩家游戏记录
+message PlayerGameRecordRes {
+  repeated Gamerecord data = 1; // 数据
+  optional int32 page = 2; // 页码
+  optional int32 limit = 3; // 单页条数
+  optional int32 total = 4; // 总页数
+}
+
+// 请求玩家游戏详情
+message PlayerGameDetailReq {
+  optional Version version = 1;
+  optional string matchid = 2;
+}
+
+// 返回玩家游戏详情
+message PlayerGameDetailRes {
+  optional string matchid = 1; // 对局id
+  optional string detal = 2; // 详情(json)
+}

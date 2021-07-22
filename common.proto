@@ -1,0 +1,110 @@
+// See README.txt for information and build instructions.
+// syntax = "proto2";
+// 通知消息的后缀用Ntc,请求消息Req,响应消息Res
+
+message Version {
+	optional int32  platform = 1; //client 平台id(属于哪家公司发行)
+	optional int32  channel = 2;  //client 渠道id(发行公司的发行渠道)
+	optional string version = 3;  //client 版本号
+	optional int32  regfrom = 4;  //描述从哪里注册过来的
+	optional int32  clienttype = 5; //客户端类型 1表示cocos2d+lua 其他
+}
+
+message ClientMsgHead {
+	optional string msgname = 1;    
+	optional string svr_id = 2;
+	optional int32  service_address = 3; 
+	optional int32  msgtype = 4;	
+}
+
+message CloseNtc{
+	optional int32 code = 1;    
+	optional string reason = 2;    
+}
+
+message DebugReq {
+	optional Version version = 1;
+	optional string req = 2;
+}
+
+message DebugRes {
+	optional string res = 1;
+}
+
+message GetServerSettingReq{
+	optional Version version = 1;
+	repeated string fields = 2;
+}
+
+message GetServerSettingRes{
+	optional string data = 1;	//json数据
+}
+
+message AwardItem {
+	optional int32 id = 1;  //物品id
+	optional int32 num = 2; //物品数量
+}
+
+// 下注详情单元
+message ChipStatsItem {
+	required int32 denomination = 1;    // 筹码面额
+	required int32 num = 2;                       // 筹码数量
+}
+
+// 下注统计信息
+message BetStatsInfo {
+	required int64 betCount = 1;                     // 下注总计
+	repeated ChipStatsItem betDetail = 2;   // 下注详情
+}
+
+// 下注位置信息
+message BetPositionInfo {
+	required  int32		   betPosition = 1;   //下注位置
+	required  BetStatsInfo betStats = 2;   //下注统计
+	optional  int64		   allowedBetCount 	= 3;   //可下注额
+}
+
+// 玩家基本信息
+message PlayerBaseInfo {
+	required string rolename = 1;  // 玩家名字
+	required string logo = 2;  // 玩家头像url
+	required int32  sex = 3;  // 玩家性别
+	required string adress = 4;  // 玩家省份
+	optional int32 vipLevel = 5;  // VIP等级
+}
+
+// 玩家基础信息
+message PlayerBaseGameInfo {
+	required int32 rid = 1;  // 玩家角色ID
+	required int64 coin = 2;  // 玩家金币
+	required PlayerBaseInfo playerinfo = 3;  // 玩家基本信息
+}
+
+message GamePlayerInfo {
+	optional int32 rid = 1;
+	optional string rolename = 2;
+	optional string logo = 3;
+	optional int32 sex = 4;    
+	optional int64 coin = 5;
+	optional int32 frame = 6;  //头像框
+	optional int32 seat_index = 7;
+	optional int32 status = 8;//当前状态(如果是准备中的状态)
+	repeated int32 cards = 9;
+	optional int32 outtime = 10;//当期状态倒计时时间
+	optional int32 isbank = 11;//是否是庄家
+	optional int32 action_type = 12;     //操作类型(废弃)
+	optional int64 call_score  = 13;     //叫分数
+	optional int32 qiangzhuang_score = 14; //抢庄分数
+	optional int32 card_type   = 15;     //牌型
+	optional int32 card_type_point = 16; //牌型倍数
+	optional string adress = 17; //注册地址
+	optional int32 multiple = 18;//
+	optional int32 kick_limit_coin = 19;
+	optional int64 base_score = 20;
+	optional int32 cardsnum = 21;
+	optional int32 fifth_card = 22;//第五张牌
+	repeated int32 multiples = 23;//
+	optional bool isBuyScoreEnd = 24;//是否操作过买码
+	optional int32 discardsState = 25;//弃牌状态 0 未操作 1 已操作 2 弃牌 3 不弃 
+	optional int32 vipLevel = 26;//VIP等级
+}

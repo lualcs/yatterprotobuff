@@ -1,0 +1,269 @@
+// syntax = "proto2";
+// 通知消息的后缀用Ntc,请求消息Req,响应消息Res
+
+// 订单状态枚举
+enum OrderStatusEnum {
+    INIT    = 0;    // 初始状态/待支付/进行中
+    SUCCESS = 1;    // 充值成功
+    FAILD   = 2;    // 充值失败
+    MANUAL  = 3;    // 手动补单
+    TIMEOUT = 4;    // 超时
+}
+
+// 提现订单状态
+enum WithdrawOrderStatusEnum {
+    INIT     = 0;   // 待审核
+    REFUSED  = 1;   // 审核拒绝
+    TRANSFER = 2;   // 提现中
+    SUCCESS  = 3;   // 提现成功
+    FAILD    = 4;   // 提现失败
+    TIMEOUT  = 5;   // 提现超时
+    RETURN   = 6;   // 提现退回
+}
+
+// 充值类型枚举
+enum RechargeTypeEnum {
+    ALIPAY      = 0;    // 支付宝
+    BANKCARD    = 1;    // 银行卡
+    WECHATPAY   = 2;    // 微信
+    QQPAY       = 3;    // QQ
+    JDPAY       = 4;    // 京东
+    UNIPAY      = 5;    // 银联
+    MEITUAN     = 6;    // 美团
+    WECHATTM    = 7;    // 微信条码
+    ALIPAYQR    = 8;    // 支付宝扫码
+    WECHATPAYQR = 9;    // 微信扫码
+    QQPAYQR     = 10;    // QQ扫码
+    JDPAYQR     = 11;    // 京东扫码
+    UNIPAYQR    = 12;    // 银联扫码
+}
+
+// 商户数据
+message RechargeMerchant {
+    required int32  merchant_id = 1;    // 商户ID
+    required string type        = 2;    // 充值类型
+    required string name        = 3;    // 商户名字
+    required string desc        = 4;    // 商户描述
+}
+
+// 获取充值商户列表请求
+message PullRechargeListReq {
+}
+
+// 获取充值商户列表响应
+message PullRechargeListRes {
+    required int32            errorcode = 1;   // 错误码
+    optional string           errordesc = 2;   // 错误描述
+    repeated RechargeMerchant merchants = 3;   // 商户数据
+}
+
+// 获取充值商户档位请求
+message PullRechargeMchPositionsReq {
+    required int32  merchant_id = 1;    // 商户ID
+    required string type        = 2;    // 充值类型
+}
+
+// 获取充值商户档位响应
+message PullRechargeMchPositionsRes {
+    required int32  errorcode = 1;   // 错误码
+    optional string errordesc = 2;   // 错误描述
+    repeated int32  positions = 3;   // 档位数据
+}
+
+// 充值请求
+message ThirdPayRechangeReq {
+    required int32  merchant_id = 1;    // 商户ID
+    required string type        = 2;    // 充值类型
+    required int64  price       = 3;    // 金额
+}
+
+// 展示方式枚举
+enum ShowMethodEnum {
+    BROWSER = 0;    // 浏览器打开
+    INTERFACE = 1;  // 客户端界面展示
+}
+
+// 界面类型枚举
+enum InterfaceEnum {
+    BANKCARD = 0;   // 银行卡界面
+    ALIPAY   = 1;   // 支付宝界面
+}
+
+// 银行卡数据
+message BankCardData {
+    required string bank_flag   = 1;    // 银行缩写
+    required string card_name   = 2;    // 持卡人姓名
+    required string bank_name   = 3;    // 银行名称
+    required string card_number = 4;    // 银行卡号
+}
+
+// 支付宝数据
+message AlipayDataInfo {
+    required string account   = 1;  // 支付宝账号
+    required string real_name = 2;  // 真实姓名
+}
+
+// 客户端界面展示数据
+message InterfaceData {
+    required InterfaceEnum   method     = 1;    // 界面类型
+    optional BankCardData    bank       = 2;    // 银行卡数据
+    optional AlipayDataInfo  alipay     = 3;    // 支付宝数据
+}
+
+// 支付响应数据
+message RechargeResponse {
+    required ShowMethodEnum  method               = 1;   // 展示方式
+    required int64           price                = 2;   // 充值金额
+    required string          order_id             = 3;   // 订单号
+    required int32           stop_time            = 4;   // 订单截止时间
+    required int32           remain_time          = 5;   // 订单剩余时间 秒
+    required OrderStatusEnum status               = 6;   // 订单状态
+    optional string          url                  = 7;   // url
+    optional InterfaceData   interface            = 8;   // 界面数据
+    optional bool            have_unfinish_order  = 9;   // 是否还有未支付订单
+}
+
+// 充值响应
+message ThirdPayRechangeRes {
+    required int32            errorcode = 1;   // 错误码
+    optional string           errordesc = 2;   // 错误描述
+    optional RechargeResponse data      = 3;   // 响应数据
+}
+
+// 提现类型
+enum WithdrawTypeEnum {
+    MANUAL = 0;     // 人工提款
+    THIRD  = 1;     // 三方提款
+}
+
+// 出款方式
+enum TransferTypeEnum {
+    BANKCARD = 0;   // 银行卡
+    ALIPAY   = 1;   // 支付宝
+}
+
+// 拉取提现配置请求
+message PullWithdrawConfigReq {
+}
+
+// 拉取提现配置响应
+message PullWithdrawConfigRes {
+    required int32  errorcode = 1;  // 错误码
+    optional string errordesc = 2;  // 错误描述
+    optional string config    = 3;  // 配置数据,json字符串
+}
+
+//config
+//{
+//    config = { 提现配置
+//        serve_cost = 1,
+//        daily_limit = 3,
+//        alipay_min = 10000,
+//        alipay_max = 1000000,
+//        bank_min = 10000,
+//        bank_max = 1000000,
+//        code_switch = false
+//    },
+//    withdraw_type = { 提现方式
+//        "MANUAL":{ 出款方式
+//            "BANKCARD": true,
+//            "ALIPAY": true
+//        },
+//        "THIRD":{
+//            "BANKCARD": true
+//        }
+//    },
+//    total_code_amount = 10000, 总打码
+//    total_agent_profit = 10000,    代理总收益
+//    total_minister_profit = 10000,    部长总收益
+//    total_withdraw = 10000,    总提现
+//    dali_withdraw_count = 3    当日总提现次数
+//}
+
+// 提现请求
+message ThirdPayWithdrawReq {
+    required WithdrawTypeEnum withdraw_type = 1;    // 提现类型
+    required TransferTypeEnum transfer_type = 2;    // 出款类型
+    required int64            price         = 3;    // 提现金额 分
+}
+
+// 提现响应
+message ThirdPayWithdrawRes {
+    required int32  errorcode = 1;  // 错误码
+    optional string errordesc = 2;  // 错误描述
+}
+
+// 充值记录
+message ThridPayRechargeOrderData {
+    required string          order_id    = 1; // 订单号
+    required int64           price       = 2; // 订单金额
+    required string          create_time = 3; // 创建时间
+    required OrderStatusEnum status      = 4; // 订单状态
+}
+
+// 提现记录
+message ThridPayWithdrawOrderData {
+    required string                  order_id      = 1; // 订单号
+    required int64                   price         = 2; // 提现金额
+    required string                  create_time   = 3; // 创建时间
+    required WithdrawOrderStatusEnum status        = 4; // 订单状态
+    required TransferTypeEnum        transfer_type = 5; // 出款方式
+    required int64                   server_charge = 6; // 服务费
+    optional string                  ali_account   = 7; // 支付宝账号
+    optional string                  bank_account  = 8; // 银行卡号
+}
+
+// 记录数据
+message ThirdPayRecordData {
+    required int32                     page        = 1; // 当前页
+    required int32                     total_page  = 2; // 总页数
+    required int32                     limit       = 3; // 页数据条数
+    required int32                     total_count = 4; // 总数据条数
+    repeated ThridPayRechargeOrderData recharge    = 5; // 充值记录
+    repeated ThridPayWithdrawOrderData withdraw    = 6; // 提现记录
+}
+
+// 拉取充值记录请求
+message ListRechargeOrderReq {
+    optional int32 page  = 1;  // 目标页
+    optional int32 limit = 2;  // 页数据条数
+}
+
+// 拉取充值记录响应
+message ListRechargeOrderRes {
+    required int32              errorcode = 1;   // 错误码
+    optional string             errordesc = 2;   // 错误描述
+    optional ThirdPayRecordData data      = 3;   // 响应数据
+}
+
+// 拉取提现记录请求
+message ListWithdrawOrderReq {
+    optional int32 page  = 1;  // 目标页
+    optional int32 limit = 2;  // 页数据条数
+}
+
+// 拉取提现记录响应
+message ListWithdrawOrderRes {
+    required int32              errorcode = 1;   // 错误码
+    optional string             errordesc = 2;   // 错误描述
+    optional ThirdPayRecordData data      = 3;   // 请求数据
+}
+
+// 拉取订单界面数据请求
+message GetInterfaceDataReq {
+    required string order_id = 1;   // 订单号
+}
+
+// 拉取订单界面数据响应
+message GetInterfaceDataRes {
+    required int32           errorcode   = 1;   // 错误码
+    optional string          errordesc   = 2;   // 错误描述
+    optional ShowMethodEnum  method      = 3;   // 展示方式
+    optional int64           price       = 4;   // 充值金额
+    optional string          order_id    = 5;   // 订单号
+    optional int32           stop_time   = 6;   // 订单截止时间
+    optional int32           remain_time = 7;   // 订单剩余时间 秒
+    optional OrderStatusEnum status      = 8;   // 订单状态
+    optional InterfaceData   interface   = 9;   // 界面数据
+    optional string          url         = 10;  // url
+}

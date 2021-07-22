@@ -1,0 +1,481 @@
+// syntax = "proto2";
+// 通知消息的后缀用Ntc,请求消息Req,响应消息Res
+
+// 会话类型枚举
+enum ChatTypeEnum {
+    PRIVATE    = 0;     // 私聊
+    GROUP      = 1;     // 群聊
+    SYSTEM_NTC = 2;     // 系统通知
+    CUSTOM_SVC = 3;     // 客服对话
+    FRI_REQ    = 4;     // 好友请求
+}
+
+// 关系来源枚举
+enum SourceEnum {
+    INVALID   = 0;  // 未知来源
+    PHONECODE = 1;  // 查找手机号添加
+    ADDR_LIST = 2;  // 通讯录添加
+    QRCODE    = 3;  // 扫二维码添加
+    GROUP     = 4;  // 通过群添加
+    WECHAT    = 5;  // 微信邀请添加
+    SHARE     = 6;  // 分享下载添加
+    SEARCH_ID = 7;  // 搜索群号
+    INVITE    = 8;  // 被邀请加入
+}
+
+// 好友审批类型
+enum ApprovingEnum {
+    INIT   = 0; // 初始状态
+    READ   = 1; // 已读
+    AGREE  = 2; // 同意
+    REJECT = 3; // 拒绝
+    DELETE = 4; // 删除
+}
+
+// 数据类型
+enum DataTypeEnum {
+    INVALID    = 0;      // 未知类型
+    TEXT       = 1;      // 文本
+    PICTURE    = 2;      // 图片
+    VOICE      = 3;      // 语音
+    VIDEO      = 4;      // 视频
+    HONGBAO    = 5;      // 红包
+    EFT        = 6;      // 转账
+    GAMEBILL   = 7;      // 战绩
+    SYSNOTICE  = 8;      // 系统通知
+    GAMESTART  = 9;      // 游戏开始通知
+    BINDING    = 10;     // 绑定银行卡/支付宝
+    RECHARGE   = 11;     // 充值相关通知
+    WITHDRAW   = 12;     // 提现相关通知
+    PAYMENT    = 13;     // 账单支付完成
+    GATHERING  = 14;     // 收款完成
+    DRAWPROFIT = 15;     // 收益提现到余额
+    GAMEINVITE = 16;     // 游戏邀请
+}
+
+// 拉取用户信息方式
+enum PullTypeEnum {
+    RID     = 0;    // 同过rid拉取
+    PHONE   = 1;    // 通过手机号拉取
+    NAME    = 2;    // 通过名字拉取
+}
+
+
+// 群类型枚举
+enum GroupTypeEnum {
+    NOMAL = 0;  // 普通群
+    CLUB  = 1;  // 俱乐部
+}
+
+// 好友请求
+message FriendRequest {
+    required int32 timestamp      = 1;    // 时间戳
+    required int32 request_id     = 2;    // 申请者ID
+    required SourceEnum source    = 3;    // 来源信息
+    required ApprovingEnum status = 4;    // 审批状态
+    optional string comments      = 5;    // 备注信息
+    optional int32 source_id      = 6;    // 来源群ID
+}
+
+// 群请求
+message GroupRequest {
+    required int32 timestamp      = 1;  // 时间戳
+    required int32 request_id     = 2;  // 申请者ID
+    required SourceEnum source    = 3;  // 来源信息
+    required ApprovingEnum status = 4;  // 审批状态
+    optional int32 approving_id   = 5;  // 处理人ID
+    required int32 gid            = 6;  // 群ID
+    optional string comments      = 7;  // 备注信息
+    optional int32 inviter        = 8;  // 邀请人
+}
+
+// 好友数据
+message UserData {
+    required int32 rid         = 1; // 用户ID
+    required string name       = 2; // 昵称
+    optional string comments   = 3; // 备注
+    required SourceEnum source = 4; // 来源
+    required int32 sex         = 5; // 性别 0：未知 1：男 2：女
+    required string head       = 6; // 头像
+    optional int32 source_id   = 7; // 群ID 或 好友RID
+}
+
+// 群信息
+message GroupInfo {
+    required int32         gid     = 1;  // 群ID
+    required string        name    = 2;  // 群名字
+    optional string        note    = 3;  // 群公告
+    required int32         owner   = 4;  // 群主
+    required bool          forbid  = 5;  // 全体禁言标志
+    required bool          protect = 6;  // 保护模式标志
+    repeated int32         saymsg  = 7;  // 被禁言成员列表
+    repeated int32         admin   = 8;  // 管理员列表
+    repeated GroupRequest  request = 9;  // 进群申请列表
+    repeated UserData      members = 10; // 群成员
+    required GroupTypeEnum type    = 11; // 群类型
+}
+
+//------------------------请求消息--------------------------
+
+// 拉取指定用户信息请求结构
+message PullUsersInfoStruct {
+    required PullTypeEnum type      = 1;    // 拉取方式
+    optional int32        user_id   = 2;    // 指定用户ID
+    optional string       phone     = 3;    // 手机号
+    optional string       name      = 4;    // 用户名
+    repeated UserData     user_info = 5;    // 用户信息
+}
+
+// 拉取指定用户信息请求
+message PullUsersInfoReq {
+    repeated PullUsersInfoStruct req = 1;    // 
+}
+
+// 拉取指定用户信息响应
+message PullUsersInfoRes {
+    required int32               errorcode = 1;    // 错误码，0表示成功
+    optional string              errordes  = 2;    // 错误描述
+    repeated PullUsersInfoStruct res       = 3;    // 拉取到的用户数据
+}
+
+// 添加好友请求
+message AddFriendReq {
+    required int32      user_id  = 1;     // 指定用户ID
+    required SourceEnum source   = 2;     // 好友来源
+    required string     comments = 3;     // 备注信息
+    optional int32      gid      = 4;     // 来源群ID
+}
+
+// 添加好友响应
+message AddFriendRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述
+}
+
+// 删除好友请求
+message DeleteFriendReq {
+    required int32 user_id = 1;     // 指定用户ID
+}
+
+// 删除好友响应
+message DeleteFriendRes {
+    required int32 errorcode = 1;    // 错误码，0表示成功
+    optional string errordes = 2;    // 错误描述
+}
+
+// 好友审批请求
+message ApprovingFriendReq {
+    required int32         user_id   = 1;   // 指定用户ID
+    required ApprovingEnum approving = 2;   // 审批结果
+}
+
+// 好友审批响应
+message ApprovingFriendRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述
+}
+
+// 设置备注请求
+message SetCommentsReq {
+    required int32  user_id  = 1;   // 指定用户ID
+    required string comments = 2;   // 备注信息
+}
+
+// 设置备注响应
+message SetCommentsRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述
+}
+
+// 创建群请求
+message CreateGroupReq {
+    repeated int32  user_list  = 1;     //初始玩家列表
+    required string group_name = 2;     //群名称
+}
+
+// 创建群响应
+message CreateGroupRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述    
+}
+
+// 拉取群信息请求
+message PullGroupInfoReq {
+    required int32         group_id = 1;    // 群ID
+    optional GroupTypeEnum type     = 2;    // 拉取群类型 
+}
+
+// 拉取群信息响应
+message PullGroupInfoRes {
+    required int32     errorcode = 1;    // 错误码，0表示成功
+    optional string    errordes  = 2;    // 错误描述 
+    optional GroupInfo info      = 3;    // 群信息   
+}
+
+// 申请加群请求
+message JoinGroupReq {
+    required int32      group_id     = 1;   // 群ID
+    required SourceEnum source       = 2;   // 加群方式
+    required string     comments     = 3;   // 备注信息
+    optional int32      inviter      = 4;   // 邀请人
+}
+
+// 申请加群响应
+message JoinGroupRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述    
+}
+
+// 群申请审批请求
+message GroupApprovingReq {
+    required int32         group_id  = 1;   // 群ID
+    required int32         user_id   = 2;   // 被审批的用户ID
+    required ApprovingEnum approving = 3;   // 审批结果
+}
+
+// 群申请审批响应
+message GroupApprovingRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述    
+}
+
+// 退群请求
+message QuitGroupReq {
+    required int32 group_id = 1;   // 群ID
+}
+
+// 退群响应
+message QuitGroupRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述    
+}
+
+// 更改群名字请求
+message GroupRenameReq {
+    required int32  group_id = 1;   // 群ID
+    required string comments = 2;   // 名字
+}
+
+// 更改群名字响应
+message GroupRenameRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述    
+}
+
+// 更改群公告请求
+message GroupAlterNoteReq {
+    required int32  group_id = 1;   // 群ID
+    required string comments = 2;   // 公告
+}
+
+// 更改群公告响应
+message GroupAlterNoteRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述    
+}
+
+// 保护模式管理请求
+message GroupProtectReq {
+    required int32 group_id = 1;    // 群ID
+    required bool  protect  = 2;    // 保护模式状态
+}
+
+// 保护模式管理响应
+message GroupProtectRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述    
+}
+
+// 全体禁言管理请求
+message GroupForbidChatReq {
+    required int32 group_id = 1;    // 群ID
+    required bool  forbid   = 2;    // 全体禁言状态
+}
+
+// 全体禁言管理响应
+message GroupForbidChatRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述    
+}
+
+// 指定成员禁言管理请求
+message GroupSaymsgReq {
+    required int32 group_id = 1;    // 群ID
+    repeated int32 users_id = 2;    // 指定用户ID数组
+    required bool  saymsg   = 3;    // 指定成员禁言状态
+}
+
+// 指定成员禁言管理响应
+message GroupSaymsgRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述    
+}
+
+// 群主移交请求
+message GroupAbdicateReq {
+    required int32 group_id = 1;    // 群ID
+    required int32 user_id  = 2;    // 指定用户ID
+}
+
+// 群主移交响应
+message GroupAbdicateRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述    
+}
+
+// 管理员管理请求
+message GroupAdminMgrReq {
+    required int32 group_id  = 1;    // 群ID
+    repeated int32 users_id  = 2;    // 指定用户ID数组
+    required bool  operation = 3;    // 管理员增删状态 false:删除 true:增加
+}
+
+// 管理员管理响应
+message GroupAdminMgrRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述    
+}
+
+// 群成员管理请求
+message GroupUserMgrReq {
+    required int32 group_id  = 1;    // 群ID
+    repeated int32 users_id  = 2;    // 指定用户ID数组
+    required bool  operation = 3;    // 群成员增删状态 false:删除 true:增加
+}
+
+// 群成员管理响应
+message GroupUserMgrRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述    
+}
+
+// 群解散请求
+message GroupDissolveReq {
+    required int32 group_id = 1;    // 群ID
+}
+
+// 群解散响应
+message GroupDissolveRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述    
+}
+
+// 发送消息请求
+message SendMsgReq {
+    required int32        session   = 1;    // 会话ID
+    required ChatTypeEnum chat_type = 2;    // 会话类型
+    required DataTypeEnum data_type = 3;    // 数据类型
+    required string       data      = 4;    // 数据内容
+}
+
+// 发送消息响应
+message SendMsgRes {
+    required int32 errorcode = 1;    // 错误码，0表示成功
+    optional string errordes = 2;    // 错误描述
+}
+
+// 拉取离线消息请求
+message LoadOfflineMsgReq {
+}
+
+// 拉取离线消息响应
+message LoadOfflineMsgRes {
+    required int32   errorcode = 1; // 错误码，0表示成功
+    optional string  errordes  = 2; // 错误描述
+    optional int32   have      = 3; // 是否还有离线消息 1:还有 2没有
+    repeated MsgInfo msg       = 4; // 离线消息
+}
+
+// 消息内容
+message MsgInfo {
+    required string       session   = 1;    // 会话ID
+    required int32        send_id   = 2;    // 发送者ID
+    required int32        timestamp = 3;    // 时间戳
+    required DataTypeEnum data_type = 4;    // 数据类型
+    required string       data      = 5;    // 数据内容
+    required ChatTypeEnum chat_type = 6;    // 会话类型
+    optional string       name      = 7;    // 名字-客服聊天
+    optional string       head      = 8;    // 头像-客服聊天
+    required int64        msg_seq   = 9;    // 消息唯一ID
+}
+
+// 会话ID结构
+message SessionMsgsSeq {
+    required string session_key = 1;    // 会话key
+    repeated int64  msgs_seq    = 2;    // 消息ID
+}
+
+// 拉取消息请求
+message PullMsgsReq {
+    repeated SessionMsgsSeq req = 1;    // 拉取消息ID
+}
+
+// 拉取消息响应
+message PullMsgsRes {
+    required int32   errorcode = 1; // 错误码，0表示成功
+    optional string  errordes  = 2; // 错误描述
+    repeated MsgInfo msgs      = 3; // 拉取到的消息内容
+}
+
+// 消息确认请求
+message MsgACKReq {
+    repeated SessionMsgsSeq req = 1;    // 确认消息ID
+}
+
+// 消息确认响应
+message MsgACKRes {
+    required int32  errorcode = 1;  // 错误码，0表示成功
+    optional string errordes  = 2;  // 错误描述
+}
+
+//------------------------通知消息--------------------------
+
+// 群信息变动类型
+enum ModifyGroupEnum {
+    NAME       = 0;     // 群名字更改
+    NOTE       = 1;     // 群公告更改
+    OWNER      = 2;     // 群主移交
+    FORBID     = 3;     // 全体禁言标志更改
+    PROTECT    = 4;     // 群保护模式标志更改
+    SAYMSG_ADD = 5;     // 禁言成员添加
+    SAYMSG_DEL = 6;     // 禁言成员删除
+    ADMIN_ADD  = 7;     // 管理员添加
+    ADMIN_DEL  = 8;     // 管理员删除
+    REQUEST    = 9;     // 群请求变动
+    MEMBER_ADD = 10;    // 新增成员
+    MEMBER_DEL = 11;    // 移除成员
+}
+
+// 群信息变动结构
+message ModifyGroup {
+    required ModifyGroupEnum type       = 1;    // 群信息变动类型
+    required int32           gid        = 2;    // 发生变动的群ID
+    optional string          name       = 3;    // 群名字
+    optional string          note       = 4;    // 群公告
+    optional int32           owner      = 5;    // 群主ID
+    optional bool            forbid     = 6;    // 全体禁言标记
+    optional bool            protect    = 7;    // 保护模式标记
+    optional int32           saymsg_rid = 8;    // 禁言ID
+    optional int32           admin_rid  = 9;    // 管理员ID
+    optional GroupRequest    request    = 10;   // 群请求
+    optional UserData        member     = 11;   // 群成员
+}
+
+// 新消息通知
+message MessageNtc {
+    repeated MsgInfo       new_msg = 1; // 新消息
+    repeated FriendRequest fri_req = 2; // 好友请求状态更新
+    repeated UserData      new_fri = 3; // 新好友
+    repeated GroupInfo     new_grp = 4; // 新群聊
+    repeated int32         del_grp = 5; // 移除群
+    repeated ModifyGroup   mdf_grp = 6; // 群信息变动
+    repeated int32         del_fri = 7; // 移除好友
+}
+
+// 上线时，个人数据通知
+message UserSelfInfoNtc {
+    repeated FriendRequest request     = 1;   // 新好友申请
+    repeated UserData      friend_list = 2;   // 好友列表
+    repeated GroupInfo     group_list  = 3;   // 群聊列表
+    required string        config      = 4;   // 聊天相关配置
+}

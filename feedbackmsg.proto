@@ -1,0 +1,90 @@
+// syntax = "proto2";
+// 通知消息的后缀用Ntc,请求消息Req,响应消息Res
+import "common.proto";
+
+// 请求(留言列表)
+message FetchFeedbackListReq {
+  optional Version version = 1;
+  optional int32 deal_status = 2; //	处理状态 1:未处理 2:已处理
+  repeated string feedback_time = 3; // 留言时间 ["2020-01-01","2020-05-20"]
+  optional int32 page = 4;   //当前页
+  optional int32 limit = 5;    //每页条数
+}
+
+// 玩家信息
+message FeedbackPlayerInfo{
+  optional string rolename = 1; // 昵称
+}
+
+// 直属代理
+message FeedbackItem{
+  optional string _id = 1;   //唯一ID
+  optional int32 rid = 2;   //玩家ID
+  optional string phone = 3;    //电话
+  optional string feedback_content = 4;    //留言内容
+  optional string feedback_time = 5;  // 留言时间
+  optional string reply_content = 6;  // 回复内容
+  optional string reply_time = 7;  // 团队业绩
+  optional string reply_operator = 8; // 回复管理员(不要使用)
+  optional int32 deal_status = 9;  // 处理状态 1:未处理 2:已处理
+  optional string remark = 10;  // 备注(不要使用)
+  optional FeedbackPlayerInfo player = 11;    //玩家信息
+  optional int32 read_status = 12;  // 处理状态 1:未读 2:已读
+}
+
+// 响应(留言列表)
+message FetchFeedbackListRes{
+  optional string errcodedes = 1;//错误消息
+  optional int32 total = 2;   //总记录数
+  optional int32 total_page = 3;    //总页数
+  optional int32 page = 4;     // 当前页
+  optional int32 limit = 5;     // 每页条数
+  repeated FeedbackItem rows = 6;    //数据记录
+}
+
+// 请求(添加留言)
+message AddFeedbackReq {
+  optional Version version = 1;
+  optional string phone = 2;     // 电话
+  optional string feedback_content = 3;     // 留言内容
+}
+
+// 响应(添加留言)
+message AddFeedbackRes{
+  optional string errcodedes = 1;//错误消息
+}
+
+// 请求(编辑留言)
+message EditFeedbackReq {
+  optional Version version = 1;
+  optional string _id = 2;     // 唯一识别号
+  optional string phone = 3;     // 电话
+  optional string feedback_content = 4;     // 留言内容
+}
+
+// 响应(编辑留言)
+message EditFeedbackRes{
+  optional string errcodedes = 1;//错误消息
+}
+
+// 请求(删除留言)
+message DeleteFeedbackReq {
+  optional Version version = 1;
+  optional string _id = 2;     // 唯一识别号
+}
+
+// 响应(删除留言)
+message DeleteFeedbackRes{
+  optional string errcodedes = 1;//错误消息
+}
+
+// 请求(读取留言)
+message ReadFeedbackReq {
+  optional Version version = 1;
+  optional string _id = 2;     // 唯一识别号
+}
+
+// 响应(读取留言)
+message ReadFeedbackRes{
+  optional string errcodedes = 1;//错误消息
+}

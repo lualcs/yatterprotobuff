@@ -1,0 +1,237 @@
+// syntax = "proto2";
+// 通知消息的后缀用Ntc,请求消息Req,响应消息Res
+
+import "chatMsg.proto";
+
+//获取俱乐部权限
+message GetClubPermissionsReq{
+    optional Version version = 1; 
+}
+
+message GetClubPermissionsRes{
+    optional int32 state = 1; //0无权限 1审核中 2通过审核 3审核失败
+    repeated int32 games = 2;
+    optional int64 time = 3;
+}
+
+//提交俱乐部权限申请
+message ApplyClubPermissionsReq{
+    optional Version version = 1; 
+    optional string data = 2;   //数据 JSON
+}
+
+//提交俱乐部权限申请
+message ApplyClubPermissionsRes{
+    optional int32 errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; //错误描述	
+}
+
+message CreateClubReq{
+    optional Version version = 1; 
+    optional string name = 2; //俱乐部名称
+    repeated int32 user_list = 3; //俱乐部名称
+}
+
+message CreateClubRes{
+    optional int32 errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; //错误描述
+}
+
+message EnterClubReq{
+    optional Version version = 1; 
+    optional int32 club_id = 2; //俱乐部ID
+}
+
+message EnterClubRes{
+    optional int32 errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; //错误描述
+}
+
+message GetClubGameListReq{
+    optional Version version = 1; 
+    optional int32 club_id = 2; //俱乐部id
+}
+
+message GetClubGameListRes{
+    repeated int32 game_list = 1;
+    repeated int32 hotgame_list = 2; 
+    repeated int32 all_game_list = 3;
+}
+
+message ModifyClubGameListReq{
+    optional Version version = 1; 
+    optional int32 club_id = 2; //俱乐部id
+    repeated int32 game_list = 3;
+    repeated int32 hotgame_list = 4; 
+    repeated int32 all_game_list = 5;
+}
+
+message ModifyClubGameListRes{
+    optional int32 errcode = 1; //错误原因 0表示成功
+	optional string errcodedes = 2; //错误描述
+}
+
+message GetClubTableConfigReq{
+    optional Version version = 1; 
+    optional int32 club_id = 2; //俱乐部id
+    optional int32 gameid = 3; //游戏id
+}
+
+message GetClubTableConfigRes{
+    optional int32 errcode = 1; //错误原因 0表示成功
+    optional string errcodedes = 2; //错误描述
+    optional int32 create_table_cost = 3; //建桌消耗
+    optional int32 admin_diamond = 4; //部长钻石
+    optional int32 round_cost_rate = 5; //建房费率
+    optional string gamecfg = 6; //游戏自定义配置
+}
+
+message ClubInfoItem{
+    optional int32 club_id = 1;
+    optional int32 game_count = 2;  
+}
+
+message GetClubInfoReq{
+    optional Version version = 1;
+    repeated int32 club_ids = 2;
+}
+
+message GetClubInfoRes{
+    optional string errordes = 1;    // 错误描述    
+    repeated ClubInfoItem club_infos = 2;
+}
+
+// 申请加俱乐部请求
+message JoinClubReq {
+    required int32 club_id     = 1;   // 俱乐部ID
+    required SourceEnum source = 2;   // 加入方式
+    required string comments   = 3;   // 备注信息
+    optional int32 inviter     = 4;   // 邀请人
+}
+
+// 申请加俱乐部响应
+message JoinClubRes {
+    required int32 errorcode = 1;    // 错误码，0表示成功
+    optional string errordes = 2;    // 错误描述    
+}
+
+// 俱乐部申请审批请求
+message ClubApprovingReq {
+    required int32 club_id           = 1;   // 俱乐部ID
+    required int32 user_id           = 2;   // 被审批的用户ID
+    required ApprovingEnum approving = 3;   // 审批结果
+}
+
+// 俱乐部申请审批响应
+message ClubApprovingRes {
+    required int32 errorcode = 1;    // 错误码，0表示成功
+    optional string errordes = 2;    // 错误描述    
+}
+
+// 退俱乐部请求
+message QuitClubReq {
+    required int32 club_id = 1;   // 俱乐部ID
+}
+
+// 退俱乐部响应
+message QuitClubRes {
+    required int32 errorcode = 1;    // 错误码，0表示成功
+    optional string errordes = 2;    // 错误描述    
+}
+
+// 俱乐部成员管理请求
+message ClubUserMgrReq {
+    required int32 club_id = 1;     // 俱乐部ID
+    repeated int32 users_id  = 2;    // 指定用户ID
+    required bool operation = 3;    // 俱乐部成员增删状态 false:删除 true:增加
+}
+
+// 俱乐部成员管理响应
+message ClubUserMgrRes {
+    required int32 errorcode = 1;    // 错误码，0表示成功
+    optional string errordes = 2;    // 错误描述    
+}
+
+// 更改俱乐部名字请求
+message ClubRenameReq {
+    required int32  club_id = 1;    // 俱乐部ID
+    required string comments = 2;   // 名字
+}
+
+// 更改俱乐部名字响应
+message ClubRenameRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述    
+}
+
+// 管理员管理请求
+message ClubAdminMgrReq {
+    required int32 club_id  = 1;     // 群ID
+    repeated int32 users_id   = 2;    // 指定用户ID
+    required bool  operation = 3;    // 管理员增删状态 false:删除 true:增加
+}
+
+// 管理员管理响应
+message ClubAdminMgrRes {
+    required int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述    
+}
+
+//自动建桌配置管理
+message AutoTableConfigItem 
+{
+    optional string id = 1;
+    optional int32 gameid = 2;
+    optional string gamecfg = 3;
+    optional int32 max_table_count = 4;
+    optional int32 time = 5;
+}
+
+message GetAutoTableConfigListReq {
+    optional Version version = 1; 
+    optional int32 club_id = 2;
+}
+
+message GetAutoTableConfigListRes {
+    optional int32 club_id = 1;
+    repeated AutoTableConfigItem config_list = 2;
+}
+
+message CreateAutoTableConfigReq {
+    optional Version version = 1; 
+    optional int32 club_id = 2;
+    optional int32 gameid = 3;
+    optional string gamecfg = 4;
+    optional int32 max_table_count = 5;
+}
+
+message CreateAutoTableConfigRes {
+    optional int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述
+    optional string config_id = 3;
+}
+
+message DeleteAutoTableConfigReq {
+    optional Version version = 1; 
+    optional int32 club_id = 2;
+    optional string config_id = 3;
+}
+
+message DeleteAutoTableConfigRes {
+    optional int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述  
+    optional string config_id = 3;
+}
+
+message ModifyAutoTableConfigReq {
+    optional Version version = 1; 
+    optional int32 club_id = 2;
+    optional string config_id = 3;
+    optional string gamecfg = 4;
+    optional int32 max_table_count = 5;
+}
+
+message ModifyAutoTableConfigRes {
+    optional int32  errorcode = 1;    // 错误码，0表示成功
+    optional string errordes  = 2;    // 错误描述
+}

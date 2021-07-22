@@ -1,0 +1,119 @@
+// syntax = "proto2";
+// 通知消息的后缀用Ntc,请求消息Req,响应消息Res
+message RecordListItem {
+    optional int32 gameId               = 1;//游戏id
+    optional string matchId             = 2;//战绩id
+    optional int64 totalScore           = 3;//总战绩(不含服务费)
+    optional int64 paidCoin             = 4;//已结算金额 总为正
+    optional string date                = 5;//时间
+    optional int64 serverCost           = 6;//服务费
+    optional string accountMode         = 7;//结算模式
+}
+
+//请求战绩列表
+message GetBillRecordListReq{
+    optional Version version    = 1;
+    optional string matchId     = 2;    //最后一条的matchId
+}
+
+message GetBillRecordListRes{
+    repeated RecordListItem RecordList  = 1;
+}
+
+//取当前桌子的战绩列表
+message GetTableRecordListReq{
+    optional Version version    = 1;
+    optional string matchId     = 2; //最后一条的matchId
+    optional string table_gid   = 3; //桌子GlobalId
+}
+message GetTableRecordListRes{
+    repeated RecordListItem RecordList  = 1;
+}
+
+//请求未支付账单列表
+message GetUnpaidBillRecordListReq{
+    optional Version version            = 1; 
+}
+
+message GetUnpaidBillRecordListRes{
+    repeated RecordListItem RecordList  = 1;
+}
+
+//游戏数据
+message RecordGameInfo {
+    optional int32 gameId               = 1;//          
+    optional int32 gameCount            = 2;//局数             
+    optional int32 playerCount          = 3;//玩家数           
+    optional int64 baseScore            = 4;//底分
+    optional int32 gameMode             = 5;//游戏模式
+}
+
+//战绩回放
+message GetBillRecordReq {
+    optional Version version            = 1; 
+    optional string matchId                   = 2;//战绩id
+}
+
+message GetBillRecordRes {
+    optional string errcodedes                           = 1;//错误描述
+    optional string singleGameDetailsList                = 2;//回放单局详情数组 Json字符串          
+    optional string accountMode                          = 3;//结算类型 积分|金币 gold|score
+    optional RecordGameInfo gameInfo                     = 4;//游戏数据
+}
+
+
+//战绩|账单详情 玩家信息
+message RecordDetailsPlayerInfo {
+    optional string logo           = 1;//头像                  
+    optional string name           = 2;//姓名                  
+    optional int32 rid             = 3;//              
+    optional string adminName      = 4;//管理员名字
+    optional string clubName       = 5;//俱乐部名                      
+    optional int64 serverCost      = 6;//桌费|服务费
+    optional int64 totalScore      = 8;//战绩
+    optional int64 paidCoin        = 9;//已结算
+}
+
+//获取账单详情
+message GetBillRecordDetailsReq{
+    optional Version version            = 1; 
+    optional string matchId             = 2;//战绩id
+}
+
+message GetBillRecordDetailsRes{
+    optional string errcodedes                           = 1;//错误描述
+    optional string matchId                              = 2;//   
+    optional RecordGameInfo gameInfo                     = 3;//游戏数据
+    repeated RecordDetailsPlayerInfo playerList          = 4;//玩家列表   
+    optional bool isHavePassWord                        = 5;//是否有密码
+    optional string accountMode                         = 6;//结算模式
+}
+
+message GetUnpaiedBillCountReq
+{
+    optional Version version    = 1; 
+}
+
+message GetUnpaiedBillCountRes
+{
+    optional string errcodedes  = 1;//错误描述
+    optional int32 count = 2;       
+}
+
+message PayBillReq{
+    optional Version version            = 1; 
+    optional string matchId              = 2;//战绩id
+    optional int64 coin                 = 3;//支付金币
+    optional string passWord            = 4;//密码
+}
+
+message PayBillRes{
+    optional string errcodedes =1;//错误描述
+}
+
+//广播消息 
+
+//刷新账单数据
+message PayBillNtc{
+    optional string matchId = 1;
+}

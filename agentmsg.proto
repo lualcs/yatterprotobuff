@@ -1,0 +1,291 @@
+// syntax = "proto2";
+// 通知消息的后缀用Ntc,请求消息Req,响应消息Res
+import "common.proto";
+
+// 请求(玩家代理注册)
+message RegisterAgentReq {
+    optional Version version = 1;	
+    optional string promocode = 2;     // 父级代理推广码	(可以不填写,不填写则为顶级)
+}
+
+// 响应(玩家代理注册)
+message RegisterAgentRes{
+    optional string errcodedes = 1;//错误消息
+    optional int32 parent_rid = 2;  //父级代理RID
+}
+
+// 请求(申请代理Token)
+message ApplyAgentTokenReq {
+    optional Version version = 1;	
+}
+
+// 响应(申请代理Token)
+message ApplyAgentTokenRes{
+    optional int32 status = 1;  // 状态  1：是正常代理  2：代理账号已禁用  3：代理不存在  4：不是代理
+    optional string redirect_url = 2;  // 跳转链接
+    optional string parent_promocode = 3; // 父级推广码
+}
+
+// 请求(获取代理推广码)
+message FetchAgentPromoteUrlReq {
+    optional Version version = 1;	
+}
+
+// 响应(获取代理推广码)
+message FetchAgentPromoteUrlRes{
+    optional string errcodedes = 1;//错误消息
+    optional string promote_url = 2; // 推广链接
+}
+
+// 拉取自己的代理数据请求
+message FetchSelfAgentDataReq {
+}
+
+// 拉取自己的代理数据响应
+message FetchSelfAgentDataRes {
+    required int32  errorcode = 1;  // 错误码
+    optional string errordesc = 2;  // 错误描述
+    optional string promocode = 3;  // 推广码
+    optional int32  type      = 4;  // 代理类型 1：大区代理 2：普通代理 3：玩家
+    optional int32  rebate    = 5;  // 政策点位
+    optional int32  status    = 6;  // 状态 1:启用  2:禁用
+}
+// 下级数据
+message Subordinate {
+    required int32  rid         = 1;    // 代理ID
+    required string rolename    = 2;    // 代理昵称
+    required int32  type        = 3;    // 代理类型 1：大区代理 2：普通代理 3：玩家
+    optional string apply_time  = 4;    // 创建时间
+    optional int32  rebate      = 5;    // 政策点位
+    optional int32  status      = 6;    // 状态 1:启用  2:禁用
+    optional int32  devote      = 7;    // 贡献值
+    optional int32  performance = 8;    // 业绩
+    optional int32  sub_num     = 9;    // 下级数量
+}
+
+// 提现记录
+message WithdrawalRecord {
+    required int32  rid         = 1;    // 玩家ID
+    required int32  amount      = 2;    // 提现金额
+    required string create_time = 3;    // 提现时间
+}
+
+// 部长收益详情 金币/积分
+message MinisterProfitDetail {
+    required int32  rid        = 1; // 贡献者ID
+    required string rolename   = 2; // 贡献者昵称
+    required int32  contribute = 3; // 贡献量
+}
+
+// 页面数据
+message PageData {
+    required int32                page              = 1; // 当前页
+    required int32                limit             = 2; // 页数据条数上限
+    required int32                total_page        = 3; // 总页数
+    required int32                total             = 4; // 数据总条数
+    repeated Subordinate          rows              = 5; // 下级数据
+    optional int64                total_profit      = 6; // 总收益
+    optional int64                total_performance = 7; // 总业绩
+    repeated WithdrawalRecord     recored           = 8; // 提现记录
+    repeated MinisterProfitDetail MP_detail         = 9; // 部长收益详情
+}
+
+//**************************************以下是从web移动端移植过来的***********************************
+
+// 拉取今日新增请求
+message ListTodayAgentReq {
+    optional int32 type  = 1;   // 代理类型
+    optional int32 page  = 2;   // 目标页
+    optional int32 limit = 3;   // 页数据条数
+}
+
+// 拉取今日新增响应
+message ListTodayAgentRes {
+    required int32    errorcode = 1;    // 错误码
+    optional string   errordesc = 2;    // 错误描述
+    optional PageData data      = 3;    // 页面数据
+}
+
+// 拉取所有下级数据请求
+message ListAllAgentReq {
+    optional int32  page  = 1;  // 目标页
+    optional int32  limit = 2;  // 页数据条数
+    optional int32  rid   = 3;  // 下级ID
+    repeated string time  = 4;  // 筛选时间
+}
+
+// 拉取所有下级数据响应
+message ListAllAgentRes {
+    required int32    errorcode = 1;    // 错误码
+    optional string   errordesc = 2;    // 错误描述
+    optional PageData data      = 3;    // 页面数据
+}
+
+// 拉取授权大区下级请求
+message ListRegionAgentReq {
+    optional int32 page  = 1;   // 目标页
+    optional int32 limit = 2;   // 页数据条数
+    optional int32 rid   = 3;   // 下级ID
+}
+
+// 拉取授权大区下级响应
+message ListRegionAgentRes {
+    required int32    errorcode = 1;    // 错误码
+    optional string   errordesc = 2;    // 错误描述
+    optional PageData data      = 3;    // 页面数据
+}
+
+// 授权比例请求
+message ModifyAgentRebateReq {
+    required int32 rid    = 1;  // 下级ID
+    required int32 rebate = 2;  // 授权比例
+}
+
+// 授权比例响应
+message ModifyAgentRebateRes {
+    required int32    errorcode = 1;    // 错误码
+    optional string   errordesc = 2;    // 错误描述
+}
+
+// 开通代理请求
+message OpenAgentReq {
+    required int32 rid    = 1;  // 下级ID
+    required int32 type   = 2;  // 开通代理类型
+    optional int32 rebate = 3;  // 授权比例
+}
+
+// 开通代理响应
+message OpenAgentRes {
+    required int32  errorcode = 1;    // 错误码
+    optional string errordesc = 2;    // 错误描述
+}
+
+// 收益提现请求
+message WithdrawProfitReq {
+}
+
+// 收益提现响应
+message WithdrawProfitRes {
+    required int32  errorcode = 1;    // 错误码
+    optional string errordesc = 2;    // 错误描述
+}
+
+// 拉取提现记录请求
+message FetchStreamReq {
+}
+
+// 拉取提现记录响应
+message FetchStreamRes {
+    required int32    errorcode = 1;    // 错误码
+    optional string   errordesc = 2;    // 错误描述
+    optional PageData data      = 3;    // 页面数据
+}
+
+// 拉取今日推广收益请求
+message ListDailyProfitReq {
+    optional int32  page  = 1;  // 目标页
+    optional int32  limit = 2;  // 页数据条数
+    repeated string date  = 3;  // 日期筛选
+}
+
+// 拉取今日推广收益响应
+message ListDailyProfitRes {
+    required int32    errorcode = 1;    // 错误码
+    optional string   errordesc = 2;    // 错误描述
+    optional PageData data      = 3;    // 页面数据
+}
+
+// 拉取收益详情请求
+message FetchProfitReq {
+}
+
+// 拉取收益详情响应
+message FetchProfitRes {
+    required int32  errorcode           = 1;    // 错误码
+    optional string errordesc           = 2;    // 错误描述
+    optional int32  extract_profit      = 3;    // 可提现收益
+    optional int32  total_agent_profit  = 4;    // 累计返利
+    optional int32  withdrawed_profit   = 5;    // 已提现收益
+    optional int32  total_region_profit = 6;    // 累计大区整线收益
+}
+
+// 拉取整线业绩请求
+message ListDailyPerformanceReq {
+    optional int32  page  = 1;    // 目标页
+    optional int32  limit = 2;    // 页数据条数
+    repeated string date  = 3;    // 日期筛选
+    optional int32  rid   = 4;    // 下级RID
+}
+
+// 拉取整线业绩响应
+message ListDailyPerformanceRes {
+    required int32    errorcode = 1;    // 错误码
+    optional string   errordesc = 2;    // 错误描述
+    optional PageData data      = 3;    // 页面数据
+}
+
+// ----------------------------------------------部长收益相关---------------------------------------
+
+// 拉取部长收益请求
+message FetchMinisterProfitReq {
+}
+
+// 拉取部长收益响应
+message FetchMinisterProfitRes {
+    required int32  errorcode      = 1; // 错误码
+    optional string errordesc      = 2; // 错误描述
+    optional int64  sys_gold_coin  = 3; // 系统金币总收益
+    optional int64  club_integral  = 4; // 俱乐部积分总收益
+    optional int64  club_gold_coin = 5; // 俱乐部金币总收益
+    optional int64  total_profit   = 6; // 总收益
+    optional int64  valid_profit   = 7; // 可提现收益
+}
+
+// 拉取部长系统金币收益详情请求
+message FetchMinisterSysGoldProfitReq {
+    optional int32 page  = 1;  // 目标页
+    optional int32 limit = 2;  // 页数据条数
+}
+
+// 拉取部长系统金币收益详情响应
+message FetchMinisterSysGoldProfitRes {
+    required int32    errorcode = 1;    // 错误码
+    optional string   errordesc = 2;    // 错误描述
+    optional PageData data      = 3;    // 页面数据
+}
+
+// 拉取部长俱乐部积分收益详情请求
+message FetchMinisterClubIntergralProfitReq {
+    optional int32 page  = 1;  // 目标页
+    optional int32 limit = 2;  // 页数据条数
+}
+
+// 拉取部长俱乐部积分收益详情响应
+message FetchMinisterClubIntergralProfitRes {
+    required int32    errorcode = 1;    // 错误码
+    optional string   errordesc = 2;    // 错误描述
+    optional PageData data      = 3;    // 页面数据
+}
+
+// 拉取部长俱乐部金币收益详情请求
+message FetchMinisterClubGoldProfitReq {
+    optional int32 page  = 1;  // 目标页
+    optional int32 limit = 2;  // 页数据条数
+}
+
+// 拉取部长俱乐部金币收益详情响应
+message FetchMinisterClubGoldProfitRes {
+    required int32    errorcode = 1;    // 错误码
+    optional string   errordesc = 2;    // 错误描述
+    optional PageData data      = 3;    // 页面数据
+}
+
+// 部长收益提现请求
+message WithdrawMinisterProfitReq {
+}
+
+// 部长收益提现响应
+message WithdrawMinisterProfitRes {
+    required int32  errorcode = 1;    // 错误码
+    optional string errordesc = 2;    // 错误描述
+}
